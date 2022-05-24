@@ -26,6 +26,11 @@ account = st.sidebar.multiselect(
     default=df["Account"].unique()
 )
 
+hideTransfer = st.sidebar.checkbox(
+    'Hide transfers',
+    value=True
+)
+
 date = st.sidebar.date_input(
     "Filter by date",
     (date.today() - timedelta(days=30), date.today())
@@ -34,6 +39,10 @@ date = st.sidebar.date_input(
 df_selection = df.query(
     "Account == @account & Date >= @date[0] & Date <= @date[1]"
 )
+if hideTransfer:
+    df_selection = df_selection.query(
+        "~Description.str.startswith('[CW] TF 0836#')"
+    )
 
 totalAllTime = float(df["Value"].sum())
 totalPeriod = float(df_selection["Value"].sum())
